@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "com.rivalzin.bettersearch.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "CreativeModeInventoryScreenMixin",
+    "RecipeBookComponentMixin",
+    "CommandSuggestionsMixin",
+    "MinecraftFriendsKeyMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

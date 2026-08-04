@@ -1,0 +1,37 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/rivalzin/BetterSearch/issues"
+
+[[mods]]
+modId = "bettersearch"
+version = "${version}"
+displayName = "Better Search"
+authors = "rivalzin"
+displayURL = "https://www.youtube.com/@Rivalzln"
+logoFile = "SearchIconNEWICON512x512.png"
+# Pixel art: sem suavizacao, para o icone ficar nitido na lista de mods.
+logoBlur = false
+description = '''
+Makes search bars smarter and better!
+'''
+
+# Client-only: o mod nao precisa estar no servidor.
+[[mixins]]
+config = "bettersearch.mixins.json"
+
+[[dependencies.bettersearch]]
+modId = "neoforge"
+type = "required"
+# Um jar so cobre 26.1, 26.1.1 e 26.1.2: a API de cliente e o formato de
+# pacote de recursos (84.0) sao os mesmos nas tres.
+versionRange = "[26.1,26.2)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.bettersearch]]
+modId = "minecraft"
+type = "required"
+versionRange = "[26.1,26.2)"
+ordering = "NONE"
+side = "CLIENT"

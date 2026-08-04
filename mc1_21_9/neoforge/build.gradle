@@ -1,0 +1,88 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev'
+    id 'idea'
+}
+
+version = mod_version
+group = mod_group_id
+base.archivesName = "${mod_id}-neoforge-${minecraft_version_2119}"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+/*
+ * O codigo compartilhado NAO e um subprojeto separado: ele entra aqui como pasta de fonte
+ * e e compilado direto dentro deste jar.
+ *
+ * Foi de proposito. A alternativa (um projeto 'core' com dependencia entre projetos) exigiria
+ * shadow ou jarJar para embutir as classes no jar final, e qualquer erro nisso so aparece em
+ * tempo de execucao, com o mod ja no jogo. Assim o jar sai auto-suficiente e o que compilou,
+ * rodou.
+ */
+sourceSets {
+    main {
+        java.srcDir rootProject.file('core/src/main/java')
+        java.srcDir rootProject.file('mc1_21_9/common/src/main/java')
+        resources.srcDir rootProject.file('mc1_21_9/common/src/main/resources')
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+neoForge {
+    // Compilado contra a versao mais ANTIGA que o jar declara suportar (21.9.16-beta). Assim
+    // o compilador so deixa usar API que existe tambem na 1.21.9 - se compilassemos contra a
+    // 21.10.64, daria para usar sem querer algo que so existe na 1.21.10.
+    version = project.neo_version_2119
+
+    parchment {
+        minecraftVersion = project.minecraft_version_2119
+        mappingsVersion = project.parchment_mappings_version_2119
+    }
+
+    runs {
+        client {
+            client()
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand version: project.version
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_name,
+                'Specification-Vendor'    : mod_authors,
+                'Specification-Version'   : project.version,
+                'Implementation-Title'    : mod_name,
+                'Implementation-Version'  : project.version,
+                'Implementation-Vendor'   : mod_authors
+        ])
+    }
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

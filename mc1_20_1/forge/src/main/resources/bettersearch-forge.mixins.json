@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "com.rivalzin.bettersearch.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "bettersearch.refmap.json",
+  "client": [
+    "CreativeModeInventoryScreenMixin",
+    "RecipeBookComponentMixin",
+    "CommandSuggestionsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
