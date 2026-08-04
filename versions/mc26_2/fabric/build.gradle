@@ -16,8 +16,8 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 sourceSets {
     main {
         java.srcDir rootProject.file('core/src/main/java')
-        java.srcDir rootProject.file('mc26_2/common/src/main/java')
-        resources.srcDir rootProject.file('mc26_2/common/src/main/resources')
+        java.srcDir file('../common/src/main/java')
+        resources.srcDir file('../common/src/main/resources')
     }
 }
 
@@ -57,7 +57,7 @@ processResources {
 }
 
 jar {
-    from('../../LICENSE') {
+    from(rootProject.file('LICENSE')) {
         rename { "${it}_${mod_id}" }
     }
 }

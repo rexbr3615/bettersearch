@@ -6,7 +6,7 @@ plugins {
 
 version = mod_version
 group = mod_group_id
-base.archivesName = "${mod_id}-neoforge-${minecraft_version}"
+base.archivesName = "${mod_id}-neoforge-${minecraft_version_21111}"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
@@ -22,8 +22,8 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 sourceSets {
     main {
         java.srcDir rootProject.file('core/src/main/java')
-        java.srcDir rootProject.file('mc1_21_1/common/src/main/java')
-        resources.srcDir rootProject.file('mc1_21_1/common/src/main/resources')
+        java.srcDir file('../common/src/main/java')
+        resources.srcDir file('../common/src/main/resources')
     }
 }
 
@@ -32,11 +32,13 @@ repositories {
 }
 
 neoForge {
-    version = project.neo_version
+    // Aqui o jar cobre uma versao so, entao nao ha ponto antigo a respeitar: compilamos
+    // contra o topo da linha 21.11.
+    version = project.neo_version_21111
 
     parchment {
-        minecraftVersion = project.parchment_minecraft_version
-        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.minecraft_version_21111
+        mappingsVersion = project.parchment_mappings_version_21111
     }
 
     runs {

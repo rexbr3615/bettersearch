@@ -78,18 +78,18 @@ Só isso. Na primeira vez que a aba de busca abre, o mod monta o índice em segu
 ```bash
 ./gradlew dist                        # constroi TODOS os loaders -> build/dist/
 ./gradlew coreTest                    # testa o algoritmo, sem abrir o jogo
-./gradlew :mc1_21_1:neoforge:runClient  # abre o Minecraft com o mod (NeoForge)
-./gradlew :mc1_21_1:fabric:runClient    # idem, no Fabric
-./gradlew :mc1_20_1:forge:build         # só o jar do Forge/NeoForge 1.20.1
+./gradlew :versions:mc26_2:neoforge:runClient   # abre o Minecraft com o mod (NeoForge)
+./gradlew :versions:mc26_2:fabric:runClient     # idem, no Fabric
+./gradlew :versions:mc1_20_1:forge:build        # só o jar do Forge/NeoForge 1.20.1
 ```
 
 Precisa de **JDK 25** (é ele que roda o Gradle) e de internet na primeira execução. Os JDKs
 de cada versão — 17 para a 1.20.1, 21 para a 1.21.x, 25 para a 26.x — o Gradle baixa sozinho.
 
-O projeto é multi-loader: `core/` guarda o algoritmo (Java puro, compartilhado por todas as
-versões), `mc1_21_1/common/` guarda o resto do mod, e `mc1_21_1/neoforge/` e
-`mc1_21_1/fabric/` têm só o punhado de arquivos que cada loader exige. Veja
-[PORTING.md](PORTING.md) para acrescentar uma versão.
+O projeto é multi-loader: `core/` guarda o algoritmo (Java puro, compartilhado por **todas**
+as versões) e `versions/` guarda uma pasta por versão do Minecraft — dentro de cada uma,
+`common/` tem o resto do mod e as pastas dos loaders têm só o punhado de arquivos que cada um
+exige. Veja [PORTING.md](PORTING.md) para acrescentar uma versão.
 
 ## Configuração
 

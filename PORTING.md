@@ -7,23 +7,18 @@ BetterSearch/
 ├── core/                       ← o algoritmo. Java puro, ZERO Minecraft.
 │   └── src/main/java/…/core/       Compartilhado por TODAS as versões e loaders.
 ├── tools/                      ← o teste do algoritmo (146 verificações)
-├── mc1_21_1/                   ← tudo do Minecraft 1.21.1
-│   ├── common/                     client/, client/gui/, mixin/, lang, texturas
-│   ├── neoforge/                   2 arquivos + neoforge.mods.toml
-│   └── fabric/                     4 arquivos + fabric.mod.json
-├── mc1_21_9/                   ← Minecraft 1.21.9 **e 1.21.10** (o mesmo jar serve às duas)
-│   ├── common/                     idem, com as diferenças de 1.21.2/1.21.6/1.21.9 resolvidas
-│   ├── neoforge/                   2 arquivos + neoforge.mods.toml
-│   └── fabric/                     4 arquivos + fabric.mod.json
-├── mc1_21_11/                  ← Minecraft 1.21.11 — a 1.21.9 com `Identifier` no lugar de
-│   │                              `ResourceLocation`. Última versão ofuscada e última em Java 21
-│   ├── common/ neoforge/ fabric/
-├── mc26_1/                     ← Minecraft 26.1 · 26.1.1 · 26.1.2 (Java 25, SEM ofuscação)
-├── mc26_2/                     ← Minecraft 26.2
-├── mc1_20_1/                   ← tudo do Minecraft 1.20.1 (Java 17)
-│   ├── common/                     a mesma coisa, com as 6 diferenças da 1.20.1 resolvidas
-│   ├── fabric/                     4 arquivos + fabric.mod.json
-│   └── forge/                      3 arquivos + mods.toml (serve também ao NeoForge 20.1)
+├── versions/                   ← TUDO o que depende de versão fica aqui dentro
+│   ├── mc1_20_1/                   Minecraft 1.20.1 (Java 17)
+│   │   ├── common/                     client/, client/gui/, mixin/, lang, texturas
+│   │   ├── fabric/                     4 arquivos + fabric.mod.json
+│   │   └── forge/                      3 arquivos + mods.toml (serve também ao NeoForge 20.1)
+│   ├── mc1_21_1/                   a primeira versão portada
+│   ├── mc1_21_9/                   1.21.9 **e 1.21.10** (o mesmo jar serve às duas)
+│   ├── mc1_21_11/                  a 1.21.9 com `Identifier` no lugar de `ResourceLocation`;
+│   │                               última versão ofuscada e última em Java 21
+│   ├── mc26_1/                     26.1 · 26.1.1 · 26.1.2 (Java 25, SEM ofuscação)
+│   └── mc26_2/                     26.2
+│                                   (cada uma tem common/ + as pastas dos loaders)
 ├── build.gradle                ← coreTest e dist
 ├── settings.gradle             ← lista os alvos
 └── gradle.properties           ← todas as versões, em um lugar só
@@ -36,8 +31,8 @@ pasta de fonte e compila tudo dentro do próprio jar:
 sourceSets {
     main {
         java.srcDir rootProject.file('core/src/main/java')
-        java.srcDir rootProject.file('mc1_21_1/common/src/main/java')
-        resources.srcDir rootProject.file('mc1_21_1/common/src/main/resources')
+        java.srcDir file('../common/src/main/java')          // relativo ao próprio módulo
+        resources.srcDir file('../common/src/main/resources')
     }
 }
 ```
@@ -126,10 +121,10 @@ outro.
 
 ## Acrescentar uma versão nova
 
-1. `cp -r mc1_21_1 mc1_XX_X` e ajuste os dois `build.gradle` de dentro (os `srcDir` apontam
-   para a pasta nova) e o `settings.gradle` da raiz.
+1. `cp -r versions/mc1_21_1 versions/mc1_XX_X` e some duas linhas no `settings.gradle` da
+   raiz. Os `srcDir` de dentro são relativos ao módulo, então **não precisam ser tocados**.
 2. Ponha as versões novas no `gradle.properties`.
-3. `./gradlew :mc1_XX_X:neoforge:build` — deixe o Gradle baixar o jar da versão.
+3. `./gradlew :versions:mc1_XX_X:neoforge:build` — deixe o Gradle baixar o jar da versão.
 4. **Confira os 3 mixins contra o jar de verdade** antes de qualquer outra coisa:
    ```bash
    javap -p -c -cp <merged.jar> net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen | grep refreshSearchResults

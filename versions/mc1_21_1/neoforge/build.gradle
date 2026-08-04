@@ -6,9 +6,9 @@ plugins {
 
 version = mod_version
 group = mod_group_id
-base.archivesName = "${mod_id}-neoforge-${minecraft_version_262}"
+base.archivesName = "${mod_id}-neoforge-${minecraft_version}"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 /*
  * O codigo compartilhado NAO e um subprojeto separado: ele entra aqui como pasta de fonte
@@ -22,8 +22,8 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 sourceSets {
     main {
         java.srcDir rootProject.file('core/src/main/java')
-        java.srcDir rootProject.file('mc26_2/common/src/main/java')
-        resources.srcDir rootProject.file('mc26_2/common/src/main/resources')
+        java.srcDir file('../common/src/main/java')
+        resources.srcDir file('../common/src/main/resources')
     }
 }
 
@@ -32,10 +32,12 @@ repositories {
 }
 
 neoForge {
-    // Sem bloco parchment: a Mojang tirou a ofuscacao na 26.1 e ja entrega os nomes dos
-    // parametros, entao ele deixou de ser necessario.
-    version = project.neo_version_262
+    version = project.neo_version
 
+    parchment {
+        minecraftVersion = project.parchment_minecraft_version
+        mappingsVersion = project.parchment_mappings_version
+    }
 
     runs {
         client {
@@ -52,7 +54,7 @@ neoForge {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    options.release = 25
+    options.release = 21
 }
 
 processResources {

@@ -16,12 +16,12 @@ cd "$(dirname "$0")/.."
 EXTRA_CP="${BS_EXTRA_CP:-}"
 
 # jar do Minecraft por linha de versao (BS_JAR_<versao> sobrescreve)
-JAR_1_21_1="${BS_JAR_1_21_1:-$(ls mc1_21_1/neoforge/build/moddev/artifacts/neoforge-*-merged.jar 2>/dev/null | head -1)}"
-JAR_1_21_9="${BS_JAR_1_21_9:-$(ls mc1_21_9/neoforge/build/moddev/artifacts/neoforge-*-merged.jar 2>/dev/null | head -1)}"
-JAR_1_21_11="${BS_JAR_1_21_11:-$(ls mc1_21_11/neoforge/build/moddev/artifacts/neoforge-*-merged.jar 2>/dev/null | head -1)}"
-JAR_1_20_1="${BS_JAR_1_20_1:-$(ls mc1_20_1/fabric/build/mcjar/*.jar 2>/dev/null | head -1)}"
-JAR_26_1="${BS_JAR_26_1:-$(ls mc26_1/neoforge/build/moddev/artifacts/minecraft-patched-*-merged.jar 2>/dev/null | head -1)}"
-JAR_26_2="${BS_JAR_26_2:-$(ls mc26_2/neoforge/build/moddev/artifacts/minecraft-patched-*-merged.jar 2>/dev/null | head -1)}"
+JAR_1_21_1="${BS_JAR_1_21_1:-$(ls versions/mc1_21_1/neoforge/build/moddev/artifacts/neoforge-*-merged.jar 2>/dev/null | head -1)}"
+JAR_1_21_9="${BS_JAR_1_21_9:-$(ls versions/mc1_21_9/neoforge/build/moddev/artifacts/neoforge-*-merged.jar 2>/dev/null | head -1)}"
+JAR_1_21_11="${BS_JAR_1_21_11:-$(ls versions/mc1_21_11/neoforge/build/moddev/artifacts/neoforge-*-merged.jar 2>/dev/null | head -1)}"
+JAR_1_20_1="${BS_JAR_1_20_1:-$(ls versions/mc1_20_1/fabric/build/mcjar/*.jar 2>/dev/null | head -1)}"
+JAR_26_1="${BS_JAR_26_1:-$(ls versions/mc26_1/neoforge/build/moddev/artifacts/minecraft-patched-*-merged.jar 2>/dev/null | head -1)}"
+JAR_26_2="${BS_JAR_26_2:-$(ls versions/mc26_2/neoforge/build/moddev/artifacts/minecraft-patched-*-merged.jar 2>/dev/null | head -1)}"
 
 # Da 26.1 em diante o NeoForge e a Fabric API NAO vem dentro do jar do Minecraft: sao
 # artefatos separados. Estas variaveis levam esses jars ao classpath.
@@ -80,7 +80,7 @@ compile() {  # $1 nome  $2 jar  $3 comum  $4 loader  $5 release  $6 stubs  $7 cl
   # shellcheck disable=SC2086
   out="$(javac -encoding UTF-8 -Xlint:all --release "$release" -sourcepath "$EMPTY" -implicit:none \
         -d "build/verify/$name" -cp "$CP" $SRC 2>&1 \
-        | grep -E "^(core|mc1_|/)?[^ ]*\.java:[0-9]+: (error|warning):" \
+        | grep -E "^(core|versions|/)?[^ ]*\.java:[0-9]+: (error|warning):" \
         | grep -vE "^/(mnt|tmp|opt)/")"
   if [ -z "$out" ]; then
     echo "ok (zero erros, zero avisos)"
@@ -91,18 +91,18 @@ compile() {  # $1 nome  $2 jar  $3 comum  $4 loader  $5 release  $6 stubs  $7 cl
 }
 
 echo "=== 1. compilacao contra o Minecraft real ==="
-compile "1.21.1 neoforge" "$JAR_1_21_1" mc1_21_1/common/src/main/java mc1_21_1/neoforge/src/main/java 21 "$STUBS"
-compile "1.21.1 fabric"   "$JAR_1_21_1" mc1_21_1/common/src/main/java mc1_21_1/fabric/src/main/java   21 "$STUBS $STUBS_FABRIC"
-compile "1.21.9 neoforge" "$JAR_1_21_9" mc1_21_9/common/src/main/java mc1_21_9/neoforge/src/main/java 21 "$STUBS_2119 $STUBS_NEO"
-compile "1.21.9 fabric"   "$JAR_1_21_9" mc1_21_9/common/src/main/java mc1_21_9/fabric/src/main/java   21 "$STUBS_2119 $STUBS_FABRIC_2119"
-compile "1.21.11 neoforge" "$JAR_1_21_11" mc1_21_11/common/src/main/java mc1_21_11/neoforge/src/main/java 21 "$STUBS_2119 $STUBS_NEO"
-compile "1.21.11 fabric"  "$JAR_1_21_11" mc1_21_11/common/src/main/java mc1_21_11/fabric/src/main/java  21 "$STUBS_2119 $STUBS_FABRIC_21111"
-compile "26.1 neoforge"   "$JAR_26_1"  mc26_1/common/src/main/java   mc26_1/neoforge/src/main/java   25 "$STUBS_2119 $STUBS_NEO"    "$CP_26_1_NEO"
-compile "26.1 fabric"     "$JAR_26_1"  mc26_1/common/src/main/java   mc26_1/fabric/src/main/java     25 "$STUBS_2119 $STUBS_MODMENU" "$CP_26_1_FABRIC"
-compile "26.2 neoforge"   "$JAR_26_2"  mc26_2/common/src/main/java   mc26_2/neoforge/src/main/java   25 "$STUBS_2119 $STUBS_NEO"    "$CP_26_2_NEO"
-compile "26.2 fabric"     "$JAR_26_2"  mc26_2/common/src/main/java   mc26_2/fabric/src/main/java     25 "$STUBS_2119 $STUBS_MODMENU" "$CP_26_2_FABRIC"
-compile "1.20.1 fabric"   "$JAR_1_20_1" mc1_20_1/common/src/main/java mc1_20_1/fabric/src/main/java   17 "$STUBS $STUBS_FABRIC"
-compile "1.20.1 forge"    "$JAR_1_20_1" mc1_20_1/common/src/main/java mc1_20_1/forge/src/main/java    17 "$STUBS $STUBS_FORGE"
+compile "1.21.1 neoforge" "$JAR_1_21_1" versions/mc1_21_1/common/src/main/java versions/mc1_21_1/neoforge/src/main/java 21 "$STUBS"
+compile "1.21.1 fabric"   "$JAR_1_21_1" versions/mc1_21_1/common/src/main/java versions/mc1_21_1/fabric/src/main/java   21 "$STUBS $STUBS_FABRIC"
+compile "1.21.9 neoforge" "$JAR_1_21_9" versions/mc1_21_9/common/src/main/java versions/mc1_21_9/neoforge/src/main/java 21 "$STUBS_2119 $STUBS_NEO"
+compile "1.21.9 fabric"   "$JAR_1_21_9" versions/mc1_21_9/common/src/main/java versions/mc1_21_9/fabric/src/main/java   21 "$STUBS_2119 $STUBS_FABRIC_2119"
+compile "1.21.11 neoforge" "$JAR_1_21_11" versions/mc1_21_11/common/src/main/java versions/mc1_21_11/neoforge/src/main/java 21 "$STUBS_2119 $STUBS_NEO"
+compile "1.21.11 fabric"  "$JAR_1_21_11" versions/mc1_21_11/common/src/main/java versions/mc1_21_11/fabric/src/main/java  21 "$STUBS_2119 $STUBS_FABRIC_21111"
+compile "26.1 neoforge"   "$JAR_26_1"  versions/mc26_1/common/src/main/java   versions/mc26_1/neoforge/src/main/java   25 "$STUBS_2119 $STUBS_NEO"    "$CP_26_1_NEO"
+compile "26.1 fabric"     "$JAR_26_1"  versions/mc26_1/common/src/main/java   versions/mc26_1/fabric/src/main/java     25 "$STUBS_2119 $STUBS_MODMENU" "$CP_26_1_FABRIC"
+compile "26.2 neoforge"   "$JAR_26_2"  versions/mc26_2/common/src/main/java   versions/mc26_2/neoforge/src/main/java   25 "$STUBS_2119 $STUBS_NEO"    "$CP_26_2_NEO"
+compile "26.2 fabric"     "$JAR_26_2"  versions/mc26_2/common/src/main/java   versions/mc26_2/fabric/src/main/java     25 "$STUBS_2119 $STUBS_MODMENU" "$CP_26_2_FABRIC"
+compile "1.20.1 fabric"   "$JAR_1_20_1" versions/mc1_20_1/common/src/main/java versions/mc1_20_1/fabric/src/main/java   17 "$STUBS $STUBS_FABRIC"
+compile "1.20.1 forge"    "$JAR_1_20_1" versions/mc1_20_1/common/src/main/java versions/mc1_20_1/forge/src/main/java    17 "$STUBS $STUBS_FORGE"
 
 echo
 echo "=== 2. testes do algoritmo (valem para toda versao e todo loader) ==="
@@ -116,7 +116,7 @@ java -Dfile.encoding=UTF-8 -cp build/coreTest \
 
 echo
 echo "=== 3. arquivos JSON ==="
-for f in $(find core mc1_20_1 mc1_21_1 mc1_21_9 mc1_21_11 mc26_1 mc26_2 -name '*.json' -not -path '*/build/*' | sort); do
+for f in $(find core versions -name '*.json' -not -path '*/build/*' | sort); do
   if python3 -c "import json,sys; json.load(open('$f',encoding='utf-8'))" 2>/dev/null; then
     echo "  ok   $f"
   else
@@ -129,8 +129,8 @@ echo "=== 4. os dois arquivos de mixin da 1.20.1 continuam iguais ==="
 # O Forge precisa da linha "refmap" (roda com nomes SRG) e o Fabric nao pode te-la (quem
 # escreve la e o Loom). Por isso sao dois arquivos - e por isso eles podem sair de sincronia
 # sem ninguem perceber. Tirando o refmap, tem de ser byte a byte o mesmo arquivo.
-COMMON_MIXINS=mc1_20_1/common/src/main/resources/bettersearch.mixins.json
-FORGE_MIXINS=mc1_20_1/forge/src/main/resources/bettersearch-forge.mixins.json
+COMMON_MIXINS=versions/mc1_20_1/common/src/main/resources/bettersearch.mixins.json
+FORGE_MIXINS=versions/mc1_20_1/forge/src/main/resources/bettersearch-forge.mixins.json
 if diff <(grep -v '"refmap"' "$FORGE_MIXINS") "$COMMON_MIXINS" > /tmp/bs-mixin-diff 2>&1; then
   echo "  ok   $FORGE_MIXINS == $COMMON_MIXINS (+ refmap)"
 else

@@ -42,30 +42,31 @@ plugins {
 rootProject.name = 'BetterSearch'
 
 /*
- * Uma pasta por linha de versao do Minecraft; dentro dela, uma por loader.
+ * Tudo o que depende de versao mora em versions/: uma pasta por linha do Minecraft e, dentro
+ * dela, uma por loader. Na raiz ficam so o core/, as ferramentas e a documentacao.
  *
- * Para acrescentar uma versao: copie a pasta mc1_21_1, ajuste os build.gradle de dentro e
- * some duas linhas aqui. O core/ (o algoritmo) e compartilhado por TODAS elas e nao precisa
- * ser tocado.
+ * Para acrescentar uma versao: copie versions/mc1_21_1, ajuste os build.gradle de dentro (os
+ * caminhos la sao relativos, entao quase nada muda) e some duas linhas aqui. O core/ - o
+ * algoritmo - e compartilhado por TODAS elas e nao precisa ser tocado.
  */
 def modules = [
         // 1.21.1 - a primeira versao portada.
-        'mc1_21_1:neoforge', 'mc1_21_1:fabric',
+        'versions:mc1_21_1:neoforge', 'versions:mc1_21_1:fabric',
 
         // 1.21.9 - o mesmo jar cobre a 1.21.10 (veja minecraft_version_2119).
-        'mc1_21_9:neoforge', 'mc1_21_9:fabric',
+        'versions:mc1_21_9:neoforge', 'versions:mc1_21_9:fabric',
 
         // 1.21.11 sozinha: la o ResourceLocation virou Identifier, entao e outro binario.
-        'mc1_21_11:neoforge', 'mc1_21_11:fabric',
+        'versions:mc1_21_11:neoforge', 'versions:mc1_21_11:fabric',
 
         // Versionamento por calendario, Java 25 e Minecraft sem ofuscacao. O jar da 26.1
         // cobre tambem a 26.1.1 e a 26.1.2.
-        'mc26_1:neoforge', 'mc26_1:fabric',
-        'mc26_2:neoforge', 'mc26_2:fabric',
+        'versions:mc26_1:neoforge', 'versions:mc26_1:fabric',
+        'versions:mc26_2:neoforge', 'versions:mc26_2:fabric',
 
-        // Nao ha 'mc1_20_1:neoforge': na 1.20.1 o NeoForge ainda era o Forge 47 com outro
+        // Nao ha 'versions:mc1_20_1:neoforge': na 1.20.1 o NeoForge ainda era o Forge 47 com outro
         // nome, e o jar do Forge roda nos dois. O porque esta em forge_version_1201.
-        'mc1_20_1:fabric', 'mc1_20_1:forge',
+        'versions:mc1_20_1:fabric', 'versions:mc1_20_1:forge',
 ]
 
 /*
