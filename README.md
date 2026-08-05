@@ -40,5 +40,5 @@ Below are some useful settings that make this mod stand out from similar alterna
 [![Code license (MIT)](https://img.shields.io/badge/code%20license-MIT-green.svg?style=flat-square)](https://github.com/rivalzin/bettersearch/blob/main/LICENSE)
 
 <p align="center">
-  <sub>Page design inspired by <a href="https://github.com/Terrunic">Terrunic</a> and <a href="https://github.com/evanbones">Evan Bowness</a></sub>
+  <sub>Mod made by <a href="https://github.com/rivalzin">Rivalzin</a> (me :D), page design inspired by <a href="https://github.com/Terrunic">Terrunic</a> and <a href="https://github.com/evanbones">Evan Bowness</a></sub>
 </p>
