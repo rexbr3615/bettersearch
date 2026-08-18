@@ -1,6 +1,10 @@
-<center><img src="https://cdn.modrinth.com/data/URxm65AM/images/a03efd4c729964ac5d4ad9f03cfb22b89db558dd.png" alt="Better Search" width="700"></center>
+<p align="center">
+  <img src="https://cdn.modrinth.com/data/URxm65AM/images/a03efd4c729964ac5d4ad9f03cfb22b89db558dd.png" alt="Better Search" width="700" />
+</p>
 
-<center><img src="https://cdn.modrinth.com/data/URxm65AM/images/a0819e936af82b945e9d306bd0f4c20b6c874fb0.png" width="700"></center>
+<p align="center">
+  <img src="https://cdn.modrinth.com/data/URxm65AM/images/a0819e936af82b945e9d306bd0f4c20b6c874fb0.png" width="700" />
+</p>
 
 ---
 
@@ -13,17 +17,23 @@
 ---
 Example of the feature in action in the **Creative Tab**:
 
-<center><img src="https://cdn.modrinth.com/data/URxm65AM/images/cbb3bb035bb4979a2a80b09a0331cae4bdc247fb.webp" alt="Creative inventory search" width="640"></center>
+<p align="center">
+  <img src="https://cdn.modrinth.com/data/URxm65AM/images/cbb3bb035bb4979a2a80b09a0331cae4bdc247fb.webp" alt="Creative inventory search" width="640" />
+</p>
 
 ---
 Never struggle to find a recipe in the **Recipe Book** again!
 
-<center><img src="https://cdn.modrinth.com/data/URxm65AM/images/00aad18341bf169090b5bd785c4b6361ea2b5d27.webp" alt="Recipe book search" width="640"></center>
+<p align="center">
+  <img src="https://cdn.modrinth.com/data/URxm65AM/images/00aad18341bf169090b5bd785c4b6361ea2b5d27.webp" alt="Recipe book search" width="640" />
+</p>
 
 ---
 Building **commands** is much more convenient!
 
-<center><img src="https://cdn.modrinth.com/data/URxm65AM/images/caebfdec5cf791e8517ad8f387634d3f8e311f29.webp" alt="Command builder" width="640"></center>
+<p align="center">
+  <img src="https://cdn.modrinth.com/data/URxm65AM/images/caebfdec5cf791e8517ad8f387634d3f8e311f29.webp" alt="Command builder" width="640" />
+</p>
 
 ---
 
