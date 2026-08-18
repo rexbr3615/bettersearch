@@ -1,34 +1,14 @@
-# O que NAO vai para o GitHub.
-#
-# Regra geral: se o Gradle consegue gerar de novo, nao entra. O repositorio guarda o
-# codigo-fonte; os jars prontos vao nas Releases.
-
-# --- gerado pelo build -------------------------------------------------------------------
-# Aqui moram os jars compilados E o Minecraft baixado (dezenas de MB por versao). Nunca
-# comite esta pasta: alem do tamanho, o jar do Minecraft nao e nosso para redistribuir.
 build/
 .gradle/
-out/
-bin/
-repo/
-
-# --- ambiente de teste do mod ------------------------------------------------------------
 run/
 runs/
-
-# --- IDEs --------------------------------------------------------------------------------
+bettersearch-1.3.0.zip
 .idea/
-*.iml
 .vscode/
-.classpath
-.project
-.settings/
-
-# --- pacotes que chegam pelo chat ---------------------------------------------------------
-# As pastas chegam aqui zipadas; depois de extrair, o zip nao serve para mais nada.
-*.zip
-
-# --- lixo do sistema -----------------------------------------------------------------------
-.DS_Store
+*.iml
 Thumbs.db
-desktop.ini
+.DS_Store
+/atualizar.ps1
+/publicar-*.ps1
+/ferramentas/
+/tools/
