@@ -1,34 +1,37 @@
-# O que NAO vai para o GitHub.
-#
-# Regra geral: se o Gradle consegue gerar de novo, nao entra. O repositorio guarda o
-# codigo-fonte; os jars prontos vao nas Releases.
+# ------------------------------------------------------------------------------
+# O que o Git deve FINGIR QUE NAO EXISTE. Tudo aqui nasce do build ou da maquina
+# de quem compila - se apagar, o gradlew recria. Historico e so para o que e
+# escrito por gente.
+# ------------------------------------------------------------------------------
 
-# --- gerado pelo build -------------------------------------------------------------------
-# Aqui moram os jars compilados E o Minecraft baixado (dezenas de MB por versao). Nunca
-# comite esta pasta: alem do tamanho, o jar do Minecraft nao e nosso para redistribuir.
+# Compilados e caches do Gradle (em qualquer nivel: raiz e cada modulo)
 build/
 .gradle/
-out/
-bin/
-repo/
 
-# --- ambiente de teste do mod ------------------------------------------------------------
+# Pastas de "rodar o jogo" que o Loom/ModDev criam nos modulos
 run/
 runs/
 
-# --- IDEs --------------------------------------------------------------------------------
+# O pacote de entrega que viaja entre a IA e o rivalzin - nao e codigo-fonte
+bettersearch-1.3.0.zip
+
+# Coisas de editor/IDE
 .idea/
-*.iml
 .vscode/
-.classpath
-.project
-.settings/
+*.iml
 
-# --- pacotes que chegam pelo chat ---------------------------------------------------------
-# As pastas chegam aqui zipadas; depois de extrair, o zip nao serve para mais nada.
-*.zip
-
-# --- lixo do sistema -----------------------------------------------------------------------
-.DS_Store
+# Lixo de sistema operacional
 Thumbs.db
-desktop.ini
+.DS_Store
+
+# ------------------------------------------------------------------------------
+# Ferramental interno da dupla (rivalzin + IA). Roda so na nossa maquina e
+# descreve COMO a gente trabalha e publica - nao e parte do mod, e o publico
+# do GitHub nao precisa ver. Lembrete: o manto so esconde o que o Git ainda
+# nao fotografou; o que ja foi commitado um dia precisa ser apagado da pasta
+# do repositorio UMA vez (e o commit dessa exclusao enviado) para sumir de la.
+# ------------------------------------------------------------------------------
+*.ps1
+/ferramentas/
+/tools/
+/PORTING.md
