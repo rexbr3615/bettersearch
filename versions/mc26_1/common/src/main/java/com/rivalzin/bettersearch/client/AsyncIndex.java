@@ -23,17 +23,20 @@ public final class AsyncIndex<T> {
 
     private final String name;
 
+    // Tudo volatile porque este objeto e lido de mais de uma thread: o criativo e o JEI
+    // perguntam da thread do jogo, mas o EMI e o REI perguntam das threads de busca deles.
+    // Sem isto, a thread do REI poderia nunca enxergar que a montagem terminou.
     private volatile SearchIndex<T> index;
-    private Object readySource;
-    private int readySize = -1;
-    private long readyStamp = Long.MIN_VALUE;
+    private volatile Object readySource;
+    private volatile int readySize = -1;
+    private volatile long readyStamp = Long.MIN_VALUE;
 
-    private Object pendingSource;
-    private int pendingSize = -1;
-    private long pendingStamp = Long.MIN_VALUE;
+    private volatile Object pendingSource;
+    private volatile int pendingSize = -1;
+    private volatile long pendingStamp = Long.MIN_VALUE;
 
-    private boolean building;
-    private boolean failed;
+    private volatile boolean building;
+    private volatile boolean failed;
 
     public AsyncIndex(String name) {
         this.name = name;
@@ -48,6 +51,32 @@ public final class AsyncIndex<T> {
      * @return o indice pronto, ou {@code null} enquanto ele nao existir
      */
     public SearchIndex<T> get(Object source, int size, long stamp, Supplier<SearchIndex<T>> build) {
+        return get(source, size, stamp, build, null);
+    }
+
+    /**
+     * O indice pronto, ou {@code null} - sem disparar montagem nenhuma.
+     *
+     * <p>Existe para quem precisa preparar algo caro antes de pedir a montagem (copiar uma lista
+     * de dezenas de milhares de elementos, por exemplo). Perguntando aqui primeiro, esse preparo
+     * so acontece nas poucas vezes em que o indice realmente falta.
+     */
+    public SearchIndex<T> ready(Object source, int size, long stamp) {
+        SearchIndex<T> current = index;
+        if (current != null && readySource == source && readySize == size && readyStamp == stamp) {
+            return current;
+        }
+        return null;
+    }
+
+    /**
+     * @param onReady chamado na thread principal assim que o indice fica pronto. Serve para quem
+     *                guarda o resultado em cache proprio e nunca mais perguntaria - o caso do JEI,
+     *                que so refaz a lista quando o texto muda. Sem este empurrao, um indice que
+     *                ficou pronto meio segundo depois da primeira tecla so seria usado na proxima.
+     */
+    public SearchIndex<T> get(Object source, int size, long stamp, Supplier<SearchIndex<T>> build,
+                              Runnable onReady) {
         SearchIndex<T> current = index;
         if (current != null && readySource == source && readySize == size && readyStamp == stamp) {
             return current;
@@ -56,12 +85,17 @@ public final class AsyncIndex<T> {
             return null;
         }
         if (!building && (pendingSource != source || pendingSize != size || pendingStamp != stamp)) {
-            start(source, size, stamp, build);
+            start(source, size, stamp, build, onReady);
         }
         return null;
     }
 
-    private void start(Object source, int size, long stamp, Supplier<SearchIndex<T>> build) {
+    private synchronized void start(Object source, int size, long stamp, Supplier<SearchIndex<T>> build,
+                                    Runnable onReady) {
+        // Conferir de novo dentro da trava: duas threads podem ter passado pelo teste la fora.
+        if (building || (pendingSource == source && pendingSize == size && pendingStamp == stamp)) {
+            return;
+        }
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft == null) {
             return;
@@ -85,6 +119,9 @@ public final class AsyncIndex<T> {
                     readySource = pendingSource;
                     readySize = pendingSize;
                     readyStamp = pendingStamp;
+                    if (onReady != null) {
+                        onReady.run();
+                    }
                 }));
     }
 

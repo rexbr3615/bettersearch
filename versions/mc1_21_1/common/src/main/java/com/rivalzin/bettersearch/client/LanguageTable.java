@@ -19,6 +19,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Traducoes de itens em varios idiomas ao mesmo tempo.
@@ -93,6 +94,20 @@ public final class LanguageTable {
     /**
      * Le os idiomas pedidos. Deve ser chamado na fase de "prepare" de um reload listener
      * (ou seja, fora da thread principal) porque le arquivos.
+     *
+     * <p><b>Por que uma listagem, e nao uma busca caminho por caminho.</b> A versao antiga
+     * perguntava a cada pacote de recursos "voce tem {@code lang/<idioma>.json}?" - uma vez
+     * para cada idioma vezes cada namespace. Com 18 idiomas e 50 mods, ~900 perguntas por
+     * recarga.
+     *
+     * <p>Um pacote de recursos <i>deve</i> responder "nao tenho" quando o arquivo nao existe,
+     * mas nem todos respeitam isso: alguns lancam excecao. Como a leitura acontece durante a
+     * carga de recursos, uma excecao dali derruba o jogo <b>antes do menu principal</b> - e o
+     * mod que faz a pergunta somos nos, porque nenhum outro pede 18 idiomas de uma vez.
+     *
+     * <p>Pedindo a LISTA do que existe, so tocamos em arquivos que o proprio jogo garantiu
+     * estarem la. Nenhum pacote e provocado com pergunta sobre arquivo ausente, e de quebra
+     * as ~900 consultas viram uma so.
      */
     public static LanguageTable load(ResourceManager resourceManager, SearchSettings settings) {
         if (!settings.crossLanguage) {
@@ -100,33 +115,56 @@ public final class LanguageTable {
         }
 
         Set<String> request = requestFor(settings);
-        Set<String> codes = settings.indexesAllLanguages()
-                ? discoverAllLanguages(resourceManager)
-                : new LinkedHashSet<>(settings.languages);
-        codes.remove("*");
-        if (codes.isEmpty()) {
+        // null = "todos os idiomas"; caso contrario, so os escolhidos.
+        Set<String> wanted = settings.indexesAllLanguages() ? null : new LinkedHashSet<>(settings.languages);
+        if (wanted != null) {
+            wanted.remove("*");
+            if (wanted.isEmpty()) {
+                return new LanguageTable(Map.of(), List.of(), request);
+            }
+        }
+
+        Map<ResourceLocation, List<Resource>> available;
+        try {
+            available = resourceManager.listResourceStacks("lang", path -> path.getPath().endsWith(".json"));
+        } catch (Exception e) {
+            // Sem lista, seguimos sem busca entre idiomas. O resto do mod continua inteiro.
+            BetterSearch.LOGGER.warn("[{}] nao consegui listar os arquivos de idioma",
+                    BetterSearch.MOD_NAME, e);
             return new LanguageTable(Map.of(), List.of(), request);
         }
 
         Map<String, Map<String, String>> result = new LinkedHashMap<>();
-        List<String> order = new ArrayList<>();
-        List<String> namespaces = new ArrayList<>(resourceManager.getNamespaces());
-
-        for (String code : codes) {
-            Map<String, String> translations = new HashMap<>(2048);
-            for (String namespace : namespaces) {
-                ResourceLocation location = ResourceLocation.tryBuild(namespace, "lang/" + code + ".json");
-                if (location == null) {
-                    continue;
-                }
-                for (Resource resource : resourceManager.getResourceStack(location)) {
+        for (Map.Entry<ResourceLocation, List<Resource>> entry : available.entrySet()) {
+            String code = languageCodeOf(entry.getKey().getPath());
+            if (code == null || (wanted != null && !wanted.contains(code))) {
+                continue;
+            }
+            Map<String, String> translations = result.computeIfAbsent(code, unused -> new HashMap<>(2048));
+            try {
+                for (Resource resource : entry.getValue()) {
                     readInto(resource, translations);
                 }
+            } catch (Exception e) {
+                // Um pacote mal-comportado atrapalha o proprio idioma dele, e mais nada.
+                BetterSearch.LOGGER.debug("[{}] pacote de idioma ignorado ({}): {}",
+                        BetterSearch.MOD_NAME, entry.getKey(), e.toString());
             }
-            if (!translations.isEmpty()) {
-                result.put(code, translations);
-                order.add(code);
+        }
+        result.values().removeIf(Map::isEmpty);
+
+        // A ordem importa na hora de indexar, entao ela e deliberada: quando o usuario
+        // escolheu os idiomas, respeitamos a ordem dele; em "todos", ordem alfabetica para
+        // o resultado ser sempre o mesmo.
+        List<String> order = new ArrayList<>();
+        if (wanted != null) {
+            for (String code : wanted) {
+                if (result.containsKey(code)) {
+                    order.add(code);
+                }
             }
+        } else {
+            order.addAll(new TreeSet<>(result.keySet()));
         }
 
         BetterSearch.LOGGER.info("[{}] {} idiomas indexados ({} traducoes de itens): {}",
@@ -135,22 +173,13 @@ public final class LanguageTable {
         return new LanguageTable(result, List.copyOf(order), request);
     }
 
-    private static Set<String> discoverAllLanguages(ResourceManager resourceManager) {
-        Set<String> codes = new LinkedHashSet<>();
-        try {
-            for (ResourceLocation location : resourceManager
-                    .listResources("lang", rl -> rl.getPath().endsWith(".json")).keySet()) {
-                String path = location.getPath();
-                int slash = path.lastIndexOf('/');
-                String code = path.substring(slash + 1, path.length() - ".json".length());
-                if (!code.isEmpty()) {
-                    codes.add(code);
-                }
-            }
-        } catch (Exception e) {
-            BetterSearch.LOGGER.warn("[{}] nao consegui listar os idiomas disponiveis", BetterSearch.MOD_NAME, e);
+    /** {@code "lang/pt_br.json"} -> {@code "pt_br"}, ou {@code null} se nao parecer idioma. */
+    private static String languageCodeOf(String path) {
+        if (!path.endsWith(".json")) {
+            return null;
         }
-        return codes;
+        String code = path.substring(path.lastIndexOf('/') + 1, path.length() - ".json".length());
+        return code.isEmpty() ? null : code;
     }
 
     private static void readInto(Resource resource, Map<String, String> out) {

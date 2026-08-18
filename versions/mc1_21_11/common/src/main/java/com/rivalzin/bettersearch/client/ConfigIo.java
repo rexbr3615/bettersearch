@@ -50,7 +50,10 @@ public final class ConfigIo {
             "fuzzyThreshold / crossFieldThreshold: how few results justify running the more",
             "  permissive passes. Higher = tries harder, slightly more time per keystroke.",
             "sortByRelevance: order by best match instead of creative tab order.",
-            "maxResults: 0 = unlimited."
+            "maxResults: 0 = unlimited.",
+            "searchJei / searchEmi / searchRei: use this same search inside JEI's, EMI's and",
+            "  REI's item lists. There is no separate tuning for them on purpose: every option",
+            "  above applies there too, because it is the same index and the same matcher."
     };
 
     private ConfigIo() {

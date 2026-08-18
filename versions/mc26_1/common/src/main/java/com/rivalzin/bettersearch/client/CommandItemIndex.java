@@ -39,8 +39,20 @@ public final class CommandItemIndex {
      * @return os IDs que casam com o texto, ou {@code null} enquanto o indice nao existir
      */
     public static List<Identifier> search(String rawQuery) {
+        return search(rawQuery, BetterSearchClient.settings().searchCommandItems);
+    }
+
+    /**
+     * O mesmo indice, sem amarrar na opcao de sugestao de comando.
+     *
+     * <p>O JEI usa isto para a busca entre idiomas: em vez de guardar o nome traduzido de cada um
+     * dos 30 mil ingredientes dele, pergunta aqui quais Identifiers casam e filtra a lista por isso. Este
+     * indice e pequeno (o registro de itens nao tem a explosao de NBT que incha a lista do JEI) e
+     * ja esta montado de qualquer jeito.
+     */
+    public static List<Identifier> search(String rawQuery, boolean allowed) {
         SearchSettings settings = BetterSearchClient.settings();
-        if (!BetterSearchClient.isEnabled() || !settings.searchCommandItems) {
+        if (!BetterSearchClient.isEnabled() || !allowed) {
             return null;
         }
 

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -116,6 +117,11 @@ public final class CommandSearch {
             SuggestionContext<SharedSuggestionProvider> context =
                     parse.getContext().findSuggestionContext(safeCursor);
             int start = Math.max(0, Math.min(context.startPos, safeCursor));
+            int partyStart = partyTargetStart(input, safeCursor);
+            boolean partyTarget = partyStart >= 0;
+            if (partyTarget) {
+                start = Math.max(start, partyStart);
+            }
             String word = input.substring(start, safeCursor);
             if (word.length() < MIN_WORD_LENGTH) {
                 return original;
@@ -143,7 +149,7 @@ public final class CommandSearch {
                     }
                 }
             }
-            if (wantsPlayers && settings.searchPlayerNames) {
+            if ((wantsPlayers || partyTarget) && settings.searchPlayerNames) {
                 additions.addAll(matchNames(onlinePlayerNames(), word, settings));
             }
             return merge(original, additions, start, safeCursor, settings);
@@ -324,6 +330,35 @@ public final class CommandSearch {
         return type instanceof EntityArgument
                 || type instanceof GameProfileArgument
                 || type instanceof ScoreHolderArgument;
+    }
+
+    /**
+     * Comandos de party que nao passam pelo Brigadier.
+     *
+     * <p>O {@link #isPlayerLike} resolve o caso vanilla, em que o proprio jogo diz que aquele
+     * argumento e um jogador. Em servidor com plugin isso nao acontece: {@code /party} e
+     * {@code /invite} chegam ao cliente como um argumento de texto solto, quando chegam, e o
+     * Brigadier nao tem como saber que ali cabe um nome. Sobra ir pelo nome do comando.
+     */
+    private static final Set<String> PARTY_COMMANDS =
+            Set.of("invite", "group", "grupo", "party");
+
+    /**
+     * Comeco da palavra que esta sendo digitada, se o comando for um dos de party.
+     *
+     * <p>Devolve -1 quando nao e o caso. Pega tanto {@code /party invite <nome>} quanto
+     * {@code /party <nome>}, porque o recorte e sempre a ultima palavra antes do cursor.
+     */
+    private static int partyTargetStart(String input, int cursor) {
+        int begin = input.startsWith("/") ? 1 : 0;
+        int space = input.indexOf(' ', begin);
+        if (space < 0 || space >= cursor) {
+            return -1;
+        }
+        if (!PARTY_COMMANDS.contains(input.substring(begin, space).toLowerCase(Locale.ROOT))) {
+            return -1;
+        }
+        return input.lastIndexOf(' ', cursor - 1) + 1;
     }
 
     private static Collection<String> onlinePlayerNames() {

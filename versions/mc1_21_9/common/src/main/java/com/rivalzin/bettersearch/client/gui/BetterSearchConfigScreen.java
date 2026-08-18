@@ -172,9 +172,16 @@ public final class BetterSearchConfigScreen extends OptionRowsScreen {
                 addToggle("search_command_items", () -> settings.searchCommandItems,
                         v -> settings.searchCommandItems = v, DEFAULTS.searchCommandItems)
                         .preview(previewOf("search_command_items"));
-                addSlider("command_suggestion_limit", 1, 30, 1, () -> settings.commandSuggestionLimit,
+                addToggle("search_jei", () -> settings.searchJei,
+                        v -> settings.searchJei = v, DEFAULTS.searchJei);
+                addToggle("search_emi", () -> settings.searchEmi,
+                        v -> settings.searchEmi = v, DEFAULTS.searchEmi);
+                addToggle("search_rei", () -> settings.searchRei,
+                        v -> settings.searchRei = v, DEFAULTS.searchRei);
+                addSlider("command_suggestion_limit", 1, SUGGESTION_LIMIT_MAX, 1,
+                        () -> settings.commandSuggestionLimit,
                         v -> settings.commandSuggestionLimit = v, DEFAULTS.commandSuggestionLimit,
-                        value -> Component.literal(Integer.toString(value)));
+                        BetterSearchConfigScreen::suggestionLimitLabel);
             }
         }
     }
@@ -346,6 +353,15 @@ public final class BetterSearchConfigScreen extends OptionRowsScreen {
     private static Component resultCountLabel(int value) {
         return value == 0
                 ? Component.translatable("bettersearch.config.value.unlimited")
+                : Component.literal(Integer.toString(value));
+    }
+
+    /** Teto do slider de sugestoes. Chegar nele troca o numero por uma piada. */
+    private static final int SUGGESTION_LIMIT_MAX = 30;
+
+    private static Component suggestionLimitLabel(int value) {
+        return value >= SUGGESTION_LIMIT_MAX
+                ? Component.translatable("bettersearch.config.value.too_many")
                 : Component.literal(Integer.toString(value));
     }
 }

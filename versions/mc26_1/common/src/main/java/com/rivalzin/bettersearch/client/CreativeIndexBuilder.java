@@ -39,20 +39,8 @@ public final class CreativeIndexBuilder {
         long start = System.nanoTime();
         List<SearchIndex.Entry<ItemStack>> entries = new ArrayList<>(stacks.size());
 
-        // So os idiomas que estao ligados AGORA. A tabela pode conter idiomas carregados
-        // antes de o usuario desmarca-los, e usa-la crua faria "pomme" continuar achando
-        // a maca (e a batata, que em frances e "pomme de terre") com o frances desligado.
-        List<String> codes = new ArrayList<>();
-        for (String code : languages.languageCodes()) {
-            if (settings.indexesLanguage(code)) {
-                codes.add(code);
-            }
-        }
-
-        // Os apelidos secretos em ingles so entram se o ingles for mesmo pesquisado - seja
-        // porque o jogo esta em ingles, seja porque o idioma esta ligado na lista.
-        boolean englishSearched = codes.contains("en_us")
-                || "en_us".equals(LanguageCatalog.currentCode());
+        List<String> codes = activeCodes(languages, settings);
+        boolean englishSearched = englishSearched(codes);
 
         for (ItemStack stack : stacks) {
             try {
@@ -78,6 +66,51 @@ public final class CreativeIndexBuilder {
                                                            Player player,
                                                            boolean englishSearched) {
         EntryBuilder<ItemStack> builder = new EntryBuilder<>(stack);
+        fill(builder, stack, languages, codes, settings, tooltipContext, player, englishSearched);
+        return builder.build();
+    }
+
+    /**
+     * Os idiomas que estao ligados AGORA.
+     *
+     * <p>A tabela pode conter idiomas carregados antes de o usuario desmarca-los, e usa-la crua
+     * faria "pomme" continuar achando a maca (e a batata, que em frances e "pomme de terre")
+     * com o frances desligado.
+     */
+    public static List<String> activeCodes(LanguageTable languages, SearchSettings settings) {
+        List<String> codes = new ArrayList<>();
+        for (String code : languages.languageCodes()) {
+            if (settings.indexesLanguage(code)) {
+                codes.add(code);
+            }
+        }
+        return codes;
+    }
+
+    /**
+     * Os apelidos secretos em ingles so entram se o ingles for mesmo pesquisado - seja porque o
+     * jogo esta em ingles, seja porque o idioma esta ligado na lista.
+     */
+    public static boolean englishSearched(List<String> codes) {
+        return codes.contains("en_us") || "en_us".equals(LanguageCatalog.currentCode());
+    }
+
+    /**
+     * Despeja num {@link EntryBuilder} tudo por onde um ItemStack pode ser achado.
+     *
+     * <p>Publico e generico no valor de proposito: o indice do criativo guarda o proprio
+     * ItemStack, o do JEI guarda o elemento da lista dele e o do EMI guarda o ingrediente.
+     * Os tres precisam ser encontrados exatamente pelos mesmos textos, senao a busca do JEI
+     * nao seria a mesma busca do menu - que foi justamente o problema da 1.5.
+     */
+    public static void fill(EntryBuilder<?> builder,
+                            ItemStack stack,
+                            LanguageTable languages,
+                            List<String> codes,
+                            SearchSettings settings,
+                            Item.TooltipContext tooltipContext,
+                            Player player,
+                            boolean englishSearched) {
 
         Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         builder.modId(id.getNamespace());
@@ -121,8 +154,6 @@ public final class CreativeIndexBuilder {
         for (String alias : EasterEggs.aliasesFor(id.toString(), englishSearched)) {
             builder.add(alias, SearchField.SOURCE_NATIVE);
         }
-
-        return builder.build();
     }
 
     /**

@@ -21,20 +21,26 @@ public final class EasterEggs {
      * <p>A tabela e por <b>item</b>, e nao por palavra, porque e assim que o indice e
      * montado: um item de cada vez. Uma mesma palavra em varios itens faz os varios
      * aparecerem juntos.
+     *
+     * <p>{@code Map.ofEntries} e nao {@code Map.of} porque este ultimo para em dez pares.
      */
-    private static final Map<String, List<String>> ALWAYS = Map.of(
+    private static final Map<String, List<String>> ALWAYS = Map.ofEntries(
             // Technoblade never dies.
-            "minecraft:pig_spawn_egg", List.of("technoblade"),
-            "minecraft:potato", List.of("technoblade"),
-            "minecraft:golden_helmet", List.of("technoblade"),
-            "minecraft:red_bed", List.of("technoblade"),
+            Map.entry("minecraft:pig_spawn_egg", List.of("technoblade")),
+            Map.entry("minecraft:potato", List.of("technoblade")),
+            Map.entry("minecraft:golden_helmet", List.of("technoblade")),
+            Map.entry("minecraft:red_bed", List.of("technoblade")),
 
-            "minecraft:spider_spawn_egg", List.of("venomextreme", "venoninho", "venom extreme"),
-            "minecraft:gold_ingot", List.of("venomextreme", "venoninho", "venom extreme"),
-            "minecraft:arrow", List.of("venomextreme", "venoninho", "venom extreme"),
+            Map.entry("minecraft:spider_spawn_egg", List.of("venomextreme", "venoninho", "venom extreme")),
+            Map.entry("minecraft:gold_ingot", List.of("venomextreme", "venoninho", "venom extreme")),
+            Map.entry("minecraft:arrow", List.of("venomextreme", "venoninho", "venom extreme")),
 
-            "minecraft:cat_spawn_egg", List.of("rival", "rivalzin"),
-            "minecraft:music_disc_wait", List.of("rival", "rivalzin"));
+            Map.entry("minecraft:cat_spawn_egg", List.of("rival", "rivalzin")),
+            Map.entry("minecraft:music_disc_wait", List.of("rival", "rivalzin")),
+
+            Map.entry("minecraft:fox_spawn_egg", List.of("spacey", "spaceybubs", "xspaceybubs")),
+            Map.entry("minecraft:brush", List.of("spacey", "spaceybubs", "xspaceybubs")),
+            Map.entry("minecraft:yellow_dye", List.of("spacey", "spaceybubs", "xspaceybubs")));
 
     /**
      * Apelidos que so entram com o ingles ligado - sao nomes ingleses, e apareceriam do nada

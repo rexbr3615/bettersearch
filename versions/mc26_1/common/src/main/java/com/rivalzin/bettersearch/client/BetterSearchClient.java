@@ -169,6 +169,17 @@ public final class BetterSearchClient {
         cachedResults = null;
         RecipeSearch.invalidate();
         CommandItemIndex.invalidate();
+
+        // Os indices do JEI, do EMI e do REI NAO sao invalidados por chamada daqui, e isso e
+        // deliberado. Esta classe carrega sempre, com ou sem aqueles mods instalados; tocar
+        // naquelas classes obrigaria a JVM a resolve-las, e sem o mod correspondente no pack
+        // isso vira NoClassDefFoundError antes mesmo do jogo abrir.
+        //
+        // Em vez disso o contador abaixo sobe. Os tres guardam o indice com o carimbo junto e
+        // conferem sozinhos a cada busca, entao um carimbo novo ja significa "remonte". Quem
+        // nao esta instalado nao tem indice para remontar, e nenhuma classe daquele mod chega
+        // a ser mencionada.
+        languageStamp++;
     }
 
     public static boolean isEnabled() {
